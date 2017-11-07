@@ -24,7 +24,7 @@ gulp.task('js', function() {
 })
 
 gulp.task('img', function() {
-	return gulp.src(['src/assets/img/**/*.jpg', 'src/assets/img/**/*.png', 'src/assets/img/**/*.gif'])
+	return gulp.src(['src/assets/img/**/*.jpg', 'src/assets/img/**/*.jpeg', 'src/assets/img/**/*.png', 'src/assets/img/**/*.gif'])
 	.pipe(gulp.dest('dist/assets/_img'));
 })
 
