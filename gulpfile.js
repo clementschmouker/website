@@ -23,7 +23,13 @@ gulp.task('js', function() {
 	.pipe(gulp.dest('dist/assets/_js'));
 })
 
-gulp.task('watch', ['browserSync', 'sass', 'js'], function() {
+gulp.task('img', function() {
+	return gulp.src(['src/assets/img/**/*.jpg', 'src/assets/img/**/*.png', 'src/assets/img/**/*.gif'])
+	.pipe(gulp.dest('dist/assets/_img'));
+})
+
+gulp.task('watch', ['browserSync', 'img', 'sass', 'js'], function() {
+	gulp.watch('src/assets/img/**/*{jpg,jpeg,png,gif}', ['img']);
 	gulp.watch('src/assets/scss/**/*.scss', ['sass']);
 	gulp.watch('*.html', browserSync.reload);
 	gulp.watch('src/assets/js/**/*.js', ['js']);
