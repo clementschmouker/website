@@ -6,11 +6,13 @@ var webpack = require('webpack');
 var webpackStream = require('webpack-stream');
 var webpackConfig = require('./webpack.config.js');
 var uglify = require('gulp-uglify');
+var autoprefixer = require('gulp-autoprefixer');
 
 // Tasks
 gulp.task('sass', () => {
 	return gulp.src('src/assets/scss/main.scss')
 	.pipe(sass())
+	.pipe(autoprefixer())
 	.pipe(gulp.dest('dist/assets/_styles'))
 	.pipe(browserSync.reload({
 		stream: true,
