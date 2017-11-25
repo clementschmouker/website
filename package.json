@@ -27,5 +27,8 @@
     "presets": [
       "es2015"
     ]
+  },
+  "dependencies": {
+    "three": "^0.88.0"
   }
 }

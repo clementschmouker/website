@@ -1,5 +1,10 @@
 
-body {
-	margin: 0;
-	padding: 0;
-}
+@import 'vendors/normalize.scss';
+@import '_variables.scss';
+@import '_mixins.scss';
+
+
+
+/* BLOCS */
+
+@import 'blocs/header.scss';
