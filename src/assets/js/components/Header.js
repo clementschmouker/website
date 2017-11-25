@@ -18,7 +18,6 @@ export default class Header {
 		this.DEFAULT_LAYER = 0;
 		this.OCCLUSION_LAYER = 1;
 		this.RENDERSCALE = 0.5;
-
 		this.angle = 0;
 
 		this.initShaders();
@@ -29,6 +28,7 @@ export default class Header {
 		this.initCube();
 		this.initPostProcess();
 		this.loop();
+
 	}
 
 
@@ -52,7 +52,8 @@ export default class Header {
 		const FAR = 10000;
 		this.camera = new THREE.PerspectiveCamera(FOV, RATIO, NEAR, FAR);
 
-		this.camera.position.z = 6;
+		this.camera.position.z = 10;
+		this.camera.position.y = 2;
 		this.camera.lookAt(this.scene.position);
 	}
 
@@ -72,8 +73,11 @@ export default class Header {
 	}
 
 	initCube() {
-		const geometry = new THREE.BoxGeometry(1, 1, 1);
-		let material = new THREE.MeshPhongMaterial({color: 0xe74c3c});
+		const geometry = new THREE.DodecahedronBufferGeometry(1, 1);
+		let material = new THREE.MeshPhongMaterial({
+			color: 0xe74c3c,
+			shading: THREE.FlatShading,
+		});
 		this.cube = new THREE.Mesh(geometry, material);
 		this.scene.add(this.cube);
 
@@ -82,10 +86,10 @@ export default class Header {
 		this.oclBox.position.copy(this.cube.position);
 		this.oclBox.layers.set(this.OCCLUSION_LAYER);
 		this.scene.add(this.oclBox);
-
 	}
 
 	initShaders() {
+
 		THREE.VolumetericLightShader = {
 		  uniforms: {
 		    tDiffuse: {value:null},
@@ -163,16 +167,17 @@ export default class Header {
 		    "}"
 		  ].join("\n")
 		};
+
 	}
 
 	initPostProcess() {
 		let pass;
 
 		this.occlusionRenderTarget = new THREE.WebGLRenderTarget(this.values.width * this.RENDERSCALE, this.values.height * this.RENDERSCALE);
-		this.occlusionComposer = new THREE.EffectComposer(this.renderer, this.oclusionRenderTarget);
+		this.occlusionComposer = new THREE.EffectComposer(this.renderer, this.occlusionRenderTarget);
 		this.occlusionComposer.addPass(new THREE.RenderPass(this.scene, this.camera));
 		pass = new THREE.ShaderPass(THREE.VolumetericLightShader);
-		pass.needSwap = false;
+		pass.needsSwap = false;
 		this.occlusionComposer.addPass(pass);
 
 		this.composer = new THREE.EffectComposer(this.renderer);
@@ -200,21 +205,20 @@ export default class Header {
 	}
 
 	render() {
-
 		this.camera.layers.set(this.OCCLUSION_LAYER);
 		this.renderer.setClearColor(0x000000);
 		this.occlusionComposer.render();
 
 		this.camera.layers.set(this.DEFAULT_LAYER);
-		this.renderer.setClearColor(0x090611);
+		this.renderer.setClearColor(0x222222);
 		this.composer.render();
 	}
 
 	loop() {
-		this.update()
-		this.render()
 		window.requestAnimationFrame( () => {
 			this.loop()
 		})
+		this.update()
+		this.render()
 	}
 }
