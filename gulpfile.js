@@ -40,6 +40,8 @@ gulp.task('watch', ['browserSync', 'img', 'sass', 'js'], () => {
 	gulp.watch('src/assets/js/**/*.js', browserSync.reload);
 });
 
+gulp.task('build', ['img', 'sass', 'js']);
+
 
 // Browser Sync
 gulp.task('browserSync', () => {

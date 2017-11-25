@@ -29,13 +29,20 @@ export default class Header {
 		this.initPostProcess();
 		this.loop();
 
+		window.addEventListener('resize', () => {
+			this.onResize();
+		})
+
 	}
 
 
 	// INITIALIZE
 	// ----------------------------------------------------
 	initRenderer() {
-		this.renderer = new THREE.WebGLRenderer();
+		this.renderer = new THREE.WebGLRenderer({
+			antialias: true,
+			alpha: true,
+		});
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(this.values.width, this.values.height);
 		this.domEls.canvasHolder.appendChild(this.renderer.domElement);
@@ -206,12 +213,26 @@ export default class Header {
 
 	render() {
 		this.camera.layers.set(this.OCCLUSION_LAYER);
-		this.renderer.setClearColor(0x000000);
+		this.renderer.setClearColor(0x000000, 1);
 		this.occlusionComposer.render();
 
 		this.camera.layers.set(this.DEFAULT_LAYER);
-		this.renderer.setClearColor(0x222222);
+		this.renderer.setClearColor(0x222222, 1);
 		this.composer.render();
+	}
+
+	onResize() {
+
+		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.updateProjectionMatrix();
+
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+		const pixelRatio = this.renderer.getPixelRatio();
+		const newWidth = Math.floor(window.innerWidth / pixelRatio) || 1;
+		const newHeight = Math.floor(window.innerHeight / pixelRatio) || 1;
+		this.composer.setSize(newWidth, newHeight);
+		this.occlusionComposer.setSize(newWidth * this.RENDERSCALE, newHeight * this.RENDERSCALE);
 	}
 
 	loop() {
