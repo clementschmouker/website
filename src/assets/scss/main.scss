@@ -3,7 +3,10 @@
 @import '_variables.scss';
 @import '_mixins.scss';
 
-
+ul {
+	list-style: none;
+	padding: 0;
+}
 
 /* BLOCS */
 

@@ -32,7 +32,7 @@ gulp.task('img', () => {
 	.pipe(gulp.dest('dist/assets/_img'));
 })
 
-gulp.task('watch', ['browserSync', 'img', 'sass', 'js'], () => {
+gulp.task('watch', ['img', 'sass', 'js', 'browserSync'], () => {
 	gulp.watch('src/assets/img/**/*{jpg,jpeg,png,gif}', ['img']);
 	gulp.watch('src/assets/scss/**/*.scss', ['sass']);
 	gulp.watch('*.html', browserSync.reload);

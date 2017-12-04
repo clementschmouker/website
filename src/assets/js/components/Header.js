@@ -1,5 +1,6 @@
 // const THREE = require('three');
 import TweenMax from 'gsap';
+import Planet from './Planet.js';
 
 
 export default class Header {
@@ -10,6 +11,7 @@ export default class Header {
 			headerBg	 : document.querySelector('.header__bg'),
 			headerFrame  : document.querySelector('.header__bg__frame'),
 			canvasHolder : document.querySelector('#canvasHolder'),
+			projects	 : document.querySelectorAll('.project__el'),
 		}
 
 		this.values = {
@@ -21,14 +23,17 @@ export default class Header {
 		this.OCCLUSION_LAYER = 1;
 		this.RENDERSCALE = 0.5;
 		this.angle = 0;
+		this.planets = [];
+
 
 		this.initShaders();
 		this.initRenderer();
 		this.initScene();
 		this.initCamera();
 		this.initLight();
-		this.initCube();
 		this.initPostProcess();
+		this.initPlanets();
+
 		this.loop();
 
 		// Events
@@ -38,16 +43,16 @@ export default class Header {
 		window.addEventListener('mousemove', (e) => {
 			this.onMouseMove(e);
 		})
-		window.addEventListener('keydown', (e) => {
-			console.log(event.key);
-
-			switch (event.key) {
-				case 's': this.camera.position.y -= .5;
-				break;
-				case 'z': this.camera.position.y += .5;
-				break;
-			}
-		})
+		// window.addEventListener('keydown', (e) => {
+		// 	console.log(event.key);
+		//
+		// 	switch (event.key) {
+		// 		case 's': this.camera.position.y -= .5;
+		// 		break;
+		// 		case 'z': this.camera.position.y += .5;
+		// 		break;
+		// 	}
+		// })
 
 	}
 
@@ -90,33 +95,10 @@ export default class Header {
 
 
 		const oclGeo = new THREE.SphereBufferGeometry(1, 16, 16);
-		const oclMat = new THREE.MeshBasicMaterial({color: 0xffffff});
+		const oclMat = new THREE.MeshBasicMaterial({color: 0xffffaa});
 		this.occlusionSphere = new THREE.Mesh(oclGeo, oclMat);
 		this.occlusionSphere.layers.set(this.OCCLUSION_LAYER);
 		this.scene.add(this.occlusionSphere);
-	}
-
-	initCube() {
-		const geometry = new THREE.DodecahedronBufferGeometry(1, 1);
-		let material = new THREE.MeshPhongMaterial({
-			color: 0xe74c3c
-		});
-		material.flatShading = true;
-		this.cube = new THREE.Mesh(geometry, material);
-		this.scene.add(this.cube);
-
-		material = new THREE.MeshBasicMaterial({color: 0x000000})
-		this.oclBox = new THREE.Mesh(geometry, material);
-		this.oclBox.position.copy(this.cube.position);
-		this.oclBox.layers.set(this.OCCLUSION_LAYER);
-		this.scene.add(this.oclBox);
-
-
-
-		const planeGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
-		this.plane = new THREE.Mesh(planeGeo, material);
-		this.plane.rotation.x = -Math.PI/2;
-		this.scene.add(this.plane);
 	}
 
 	initShaders() {
@@ -219,22 +201,25 @@ export default class Header {
 		pass.renderToScreen = true;
 	}
 
+	initPlanets() {
+		this.domEls.projects.forEach( (item, index) => {
+			this.planets.push(new Planet({
+				radius			: parseFloat(item.getAttribute('data-size')),
+				rotationSpeed	: parseFloat(item.getAttribute('data-speed')),
+				color			: item.getAttribute('data-color'),
+				distanceFromSun : (index+1) * 2,
+			}))
+			this.scene.add(this.planets[index]);
+		})
+	}
+
 	// Loop
 	// ------------------------------------------------------
 
 	update() {
-		const radius = 2.5;
-		let xpos = Math.sin(this.angle) * radius;
-		let zpos = Math.cos(this.angle) * radius;
-
-		this.cube.position.set(xpos, 0, zpos);
-		this.cube.rotation.x += 0.01;
-		this.cube.rotation.y += 0.01;
-
-		this.oclBox.position.copy(this.cube.position);
-		this.oclBox.rotation.copy(this.cube.rotation);
-
-		this.angle += 0.02;
+		for(let i = 0; i < this.planets.length; i += 1) {
+			this.planets[i].update();
+		}
 	}
 
 	render() {
@@ -243,7 +228,7 @@ export default class Header {
 		this.occlusionComposer.render();
 
 		this.camera.layers.set(this.DEFAULT_LAYER);
-		this.renderer.setClearColor(0x222222, 1);
+		this.renderer.setClearColor(0x090611, 1);
 		this.composer.render();
 	}
 
