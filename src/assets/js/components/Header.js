@@ -1,4 +1,6 @@
 // const THREE = require('three');
+import TweenMax from 'gsap';
+
 
 export default class Header {
 
@@ -266,12 +268,21 @@ export default class Header {
 		const mouseX = (this.values.width / 2) + event.clientX - (this.values.width);
 		const mouseY = (this.values.height / 2) + event.clientY - (this.values.height);
 
-		// this.camera.position.y = -mouseX / 3000;
-		// this.camera.position.x = -Math.PI/6 -mouseY / 3000;
-		this.camera.position.x = mouseX / 250;
-		this.camera.position.y = 10 + mouseY / 250;
+		//Camera rotation did bug out, so I had to use camera position instead
+		// this.camera.rotation.y = -mouseX / 3000;
+		// this.camera.rotation.x = -Math.PI/6 -mouseY / 3000;
+		// this.camera.position.x = mouseX / 250;
+		// this.camera.position.y = 10 - mouseY / 250;
 
-		this.camera.lookAt(new THREE.Vector3(0, 0, 0))
+		TweenMax.to(this.camera.position, 0.3, {
+			x: mouseX / 250,
+			y: 10 - mouseY / 250,
+			ease: Power1.easeOut,
+			onUpdate: () => {
+				this.camera.lookAt(new THREE.Vector3(0, 0, 0))
+			}
+		});
+
 
 	}
 
