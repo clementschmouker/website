@@ -29,8 +29,22 @@ export default class Header {
 		this.initPostProcess();
 		this.loop();
 
+		// Events
 		window.addEventListener('resize', () => {
 			this.onResize();
+		})
+		window.addEventListener('mousemove', (e) => {
+			this.onMouseMove(e);
+		})
+		window.addEventListener('keydown', (e) => {
+			console.log(event.key);
+
+			switch (event.key) {
+				case 's': this.camera.position.y -= .5;
+				break;
+				case 'z': this.camera.position.y += .5;
+				break;
+			}
 		})
 
 	}
@@ -53,15 +67,15 @@ export default class Header {
 	}
 
 	initCamera() {
-		const FOV = 90;
+		const FOV = 60;
 		const RATIO = this.values.width / this.values.height;
 		const NEAR = 0.1;
 		const FAR = 10000;
 		this.camera = new THREE.PerspectiveCamera(FOV, RATIO, NEAR, FAR);
 
-		this.camera.position.z = 10;
-		this.camera.position.y = 2;
-		this.camera.lookAt(this.scene.position);
+		this.camera.position.z = 15;
+		this.camera.position.y = 8;
+		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 	}
 
 	initLight() {
@@ -82,9 +96,9 @@ export default class Header {
 	initCube() {
 		const geometry = new THREE.DodecahedronBufferGeometry(1, 1);
 		let material = new THREE.MeshPhongMaterial({
-			color: 0xe74c3c,
-			shading: THREE.FlatShading,
+			color: 0xe74c3c
 		});
+		material.flatShading = true;
 		this.cube = new THREE.Mesh(geometry, material);
 		this.scene.add(this.cube);
 
@@ -93,6 +107,13 @@ export default class Header {
 		this.oclBox.position.copy(this.cube.position);
 		this.oclBox.layers.set(this.OCCLUSION_LAYER);
 		this.scene.add(this.oclBox);
+
+
+
+		const planeGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
+		this.plane = new THREE.Mesh(planeGeo, material);
+		this.plane.rotation.x = -Math.PI/2;
+		this.scene.add(this.plane);
 	}
 
 	initShaders() {
@@ -195,6 +216,8 @@ export default class Header {
 		pass.renderToScreen = true;
 	}
 
+	// Loop
+	// ------------------------------------------------------
 
 	update() {
 		const radius = 2.5;
@@ -221,6 +244,9 @@ export default class Header {
 		this.composer.render();
 	}
 
+	//Handlers
+	// -----------------------------------------------
+
 	onResize() {
 
 		this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -233,6 +259,14 @@ export default class Header {
 		const newHeight = Math.floor(window.innerHeight / pixelRatio) || 1;
 		this.composer.setSize(newWidth, newHeight);
 		this.occlusionComposer.setSize(newWidth * this.RENDERSCALE, newHeight * this.RENDERSCALE);
+	}
+
+	onMouseMove(event) {
+		const mouseX = (this.values.width / 2) + event.clientX - (this.values.width);
+		const mouseY = (this.values.height / 2) + event.clientY - (this.values.height);
+
+		this.camera.rotation.y = -mouseX / 3000;
+		this.camera.rotation.x = -Math.PI/6 -mouseY / 3000;
 	}
 
 	loop() {
