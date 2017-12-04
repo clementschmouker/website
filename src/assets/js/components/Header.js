@@ -76,6 +76,7 @@ export default class Header {
 		this.camera.position.z = 15;
 		this.camera.position.y = 8;
 		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
 	}
 
 	initLight() {
@@ -265,8 +266,13 @@ export default class Header {
 		const mouseX = (this.values.width / 2) + event.clientX - (this.values.width);
 		const mouseY = (this.values.height / 2) + event.clientY - (this.values.height);
 
-		this.camera.rotation.y = -mouseX / 3000;
-		this.camera.rotation.x = -Math.PI/6 -mouseY / 3000;
+		// this.camera.position.y = -mouseX / 3000;
+		// this.camera.position.x = -Math.PI/6 -mouseY / 3000;
+		this.camera.position.x = mouseX / 250;
+		this.camera.position.y = 10 + mouseY / 250;
+
+		this.camera.lookAt(new THREE.Vector3(0, 0, 0))
+
 	}
 
 	loop() {
