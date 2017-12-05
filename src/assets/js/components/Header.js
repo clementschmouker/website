@@ -222,7 +222,7 @@ export default class Header {
 			size: .05
 		})
 		this.cloud = new THREE.Points(geometry, material);
-		this.cloud.position.z = -10;
+		this.cloud.position.z = -6;
 		this.cloud.rotation.x = - Math.PI/6;
 		this.scene.add(this.cloud);
 	}
@@ -286,7 +286,7 @@ export default class Header {
 
 		TweenMax.to(this.camera.position, 0.3, {
 			x: this.mouseX / 250,
-			y: 10 - this.mouseY / 250,
+			y: 6 - this.mouseY / 250,
 			ease: Power1.easeOut,
 			onUpdate: () => {
 				this.camera.lookAt(new THREE.Vector3(0, 0, 0))
