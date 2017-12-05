@@ -237,7 +237,7 @@ export default class Header {
 		raycaster.setFromCamera(this.domMouse, this.camera);
 		const intersects = raycaster.intersectObjects(this.scene.children);
 		for(let i = 0; i < intersects.length; i += 1) {
-			console.log(intersects[i]);
+			// console.log(intersects[i]);
 		}
 	}
 
