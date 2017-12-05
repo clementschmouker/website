@@ -33,7 +33,7 @@ export default class Header {
 		this.initLight();
 		this.initPostProcess();
 		this.initPlanets();
-
+		this.initStars();
 		this.loop();
 
 		// Events
@@ -87,7 +87,7 @@ export default class Header {
 	}
 
 	initLight() {
-		this.ambientLight = new THREE.AmbientLight(0x2c3e50);
+		this.ambientLight = new THREE.AmbientLight(0x111111);
 		this.scene.add(this.ambientLight);
 
 		this.pointLight = new THREE.PointLight(0xffffff);
@@ -213,6 +213,27 @@ export default class Header {
 		})
 	}
 
+	initStars() {
+		// const geometry = new THREE.DodecahedronGeometry(20, 2);
+		const geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+
+		for(var i = 0; i < geometry.vertices.length; i += 1) {
+			geometry.vertices[i].x += Math.random() * 2;
+			geometry.vertices[i].y += Math.random() * 2;
+			geometry.vertices[i].z += Math.random() * 2;
+
+		}
+
+		const material = new THREE.PointsMaterial({
+			size: .05
+		})
+		this.cloud = new THREE.Points(geometry, material);
+		console.log(this.cloud.position);
+		this.cloud.position.z = -10;
+		this.cloud.rotation.x = - Math.PI/6;
+		this.scene.add(this.cloud);
+	}
+
 	// Loop
 	// ------------------------------------------------------
 
@@ -252,12 +273,6 @@ export default class Header {
 	onMouseMove(event) {
 		const mouseX = (this.values.width / 2) + event.clientX - (this.values.width);
 		const mouseY = (this.values.height / 2) + event.clientY - (this.values.height);
-
-		//Camera rotation did bug out, so I had to use camera position instead
-		// this.camera.rotation.y = -mouseX / 3000;
-		// this.camera.rotation.x = -Math.PI/6 -mouseY / 3000;
-		// this.camera.position.x = mouseX / 250;
-		// this.camera.position.y = 10 - mouseY / 250;
 
 		TweenMax.to(this.camera.position, 0.3, {
 			x: mouseX / 250,
