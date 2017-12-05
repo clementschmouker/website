@@ -25,6 +25,9 @@ export default class Header {
 		this.angle = 0;
 		this.planets = [];
 
+		this.domMouse = new THREE.Vector2();
+
+		this.hoverable = [];
 
 		this.initShaders();
 		this.initRenderer();
@@ -43,16 +46,6 @@ export default class Header {
 		window.addEventListener('mousemove', (e) => {
 			this.onMouseMove(e);
 		})
-		// window.addEventListener('keydown', (e) => {
-		// 	console.log(event.key);
-		//
-		// 	switch (event.key) {
-		// 		case 's': this.camera.position.y -= .5;
-		// 		break;
-		// 		case 'z': this.camera.position.y += .5;
-		// 		break;
-		// 	}
-		// })
 
 	}
 
@@ -209,13 +202,14 @@ export default class Header {
 				color			: item.getAttribute('data-color'),
 				distanceFromSun : (index+1) * 2,
 			}))
+			this.hoverable.push(this.planets[index].mesh);
 			this.scene.add(this.planets[index]);
 		})
 	}
 
 	initStars() {
 		// const geometry = new THREE.DodecahedronGeometry(20, 2);
-		const geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+		const geometry = new THREE.PlaneGeometry(100, 100, 60, 60);
 
 		for(var i = 0; i < geometry.vertices.length; i += 1) {
 			geometry.vertices[i].x += Math.random() * 2;
@@ -228,10 +222,23 @@ export default class Header {
 			size: .05
 		})
 		this.cloud = new THREE.Points(geometry, material);
-		console.log(this.cloud.position);
 		this.cloud.position.z = -10;
 		this.cloud.rotation.x = - Math.PI/6;
 		this.scene.add(this.cloud);
+	}
+
+	raycast() {
+	  const raycaster = new THREE.Raycaster();
+	}
+
+
+	raycast() {
+		const raycaster = new THREE.Raycaster();
+		raycaster.setFromCamera(this.domMouse, this.camera);
+		const intersects = raycaster.intersectObjects(this.scene.children);
+		for(let i = 0; i < intersects.length; i += 1) {
+			console.log(intersects[i]);
+		}
 	}
 
 	// Loop
@@ -271,19 +278,22 @@ export default class Header {
 	}
 
 	onMouseMove(event) {
-		const mouseX = (this.values.width / 2) + event.clientX - (this.values.width);
-		const mouseY = (this.values.height / 2) + event.clientY - (this.values.height);
+		this.mouseX = (this.values.width / 2) + event.clientX - (this.values.width);
+		this.mouseY = (this.values.height / 2) + event.clientY - (this.values.height);
+
+		this.domMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+		this.domMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
 		TweenMax.to(this.camera.position, 0.3, {
-			x: mouseX / 250,
-			y: 10 - mouseY / 250,
+			x: this.mouseX / 250,
+			y: 10 - this.mouseY / 250,
 			ease: Power1.easeOut,
 			onUpdate: () => {
 				this.camera.lookAt(new THREE.Vector3(0, 0, 0))
 			}
 		});
 
-
+		this.raycast();
 	}
 
 	loop() {
